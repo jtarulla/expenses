@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ChartBar extends StatelessWidget {
   final String label;
@@ -9,11 +10,18 @@ class ChartBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final today = (DateFormat.E().format(DateTime.now()).substring(0, 2));
+
     return Padding(
       padding: EdgeInsets.all(10),
       child: Column(
         children: <Widget>[
-          FittedBox(child: Text('€${spendingAmount.toStringAsFixed(0)}')),
+          Container(
+              height: 20,
+              child: FittedBox(
+                  child: Text(spendingAmount > 1000
+                      ? '€${(spendingAmount / 1000).toStringAsFixed(1)}k'
+                      : '€${spendingAmount.toStringAsFixed(1)}'))),
           SizedBox(
             height: 4,
           ),
@@ -42,7 +50,12 @@ class ChartBar extends StatelessWidget {
           SizedBox(
             height: 4,
           ),
-          Text(label),
+          Text(
+            label,
+            style: TextStyle(
+                fontWeight:
+                    label == today ? FontWeight.bold : FontWeight.normal),
+          ),
         ],
       ),
     );

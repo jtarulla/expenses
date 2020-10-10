@@ -10,8 +10,18 @@ class Chart extends StatelessWidget {
   Chart(this.recentTransactions);
 
   List<Map<String, Object>> get groupedTransactionValues {
+    DateTime sunday() {
+      var sundayNumber = 7;
+      var sunday = DateTime.now();
+
+      while (sunday.weekday != sundayNumber) {
+        sunday = sunday.add(Duration(days: 1));
+      }
+      return sunday;
+    }
+
     return List.generate(7, (index) {
-      final weekDay = DateTime.now().subtract(
+      final weekDay = sunday().subtract(
         Duration(days: index),
       );
       var totalSum = 0.0;
@@ -28,7 +38,7 @@ class Chart extends StatelessWidget {
         'day': DateFormat.E().format(weekDay).substring(0, 2),
         'amount': totalSum
       };
-    });
+    }).reversed.toList();
   }
 
   double get totalSpending {
@@ -38,9 +48,6 @@ class Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(groupedTransactionValues
-        .map((data) => (data['amount'] as double) / totalSpending)
-        .toList());
     return Card(
         elevation: 6,
         margin: EdgeInsets.all(20),
