@@ -1,4 +1,4 @@
-# expenses_app
+# Live Below Your Means
 
 A new Flutter project.
 
