@@ -1,11 +1,22 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'models/transaction.dart';
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
 import './widgets/chart.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.portraitUp,
+  ]);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -57,14 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _startAddNewTransaction(BuildContext context) {
     showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
         context: context,
-        builder: (_) {
-          return GestureDetector(
-            onTap: () {},
-            child: NewTransaction(_addNewTransaction),
-            behavior: HitTestBehavior.opaque,
-          );
-        });
+        isScrollControlled: true,
+        builder: (context) => (Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              child: NewTransaction(_addNewTransaction),
+            )));
   }
 
   void _deleteTransaction(String id) {
@@ -75,26 +86,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Live Below Your Means'),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.add), onPressed: () {}),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(children: <Widget>[
-          Chart(_recentTransactions),
-          TransactionList(_userTransactions, _deleteTransaction),
-        ]),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          _startAddNewTransaction(context);
-        },
-      ),
+    final mediaQuery = MediaQuery.of(context);
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text('Live Below Your Means'),
+          )
+        : AppBar(
+            title: Text('Live Below Your Means'),
+            actions: <Widget>[
+              IconButton(icon: Icon(Icons.add), onPressed: () {}),
+            ],
+          );
+    final pageBody = SingleChildScrollView(
+      child: Column(children: <Widget>[
+        Container(
+            height: (mediaQuery.size.height -
+                    appBar.preferredSize.height -
+                    mediaQuery.padding.top) *
+                0.22,
+            child: Chart(_recentTransactions)),
+        Container(
+            height: (mediaQuery.size.height -
+                    appBar.preferredSize.height -
+                    mediaQuery.padding.top) *
+                0.78,
+            child: TransactionList(_userTransactions, _deleteTransaction)),
+      ]),
     );
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(child: pageBody, navigationBar: appBar)
+        : Scaffold(
+            appBar: appBar,
+            body: pageBody,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () {
+                _startAddNewTransaction(context);
+              },
+            ),
+          );
   }
 }
