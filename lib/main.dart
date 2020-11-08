@@ -73,7 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
         context: context,
         isScrollControlled: true,
         builder: (context) => (Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              padding:
+                  EdgeInsets.only(top: MediaQuery.of(context).padding.top * 2),
               child: NewTransaction(_addNewTransaction),
             )));
   }
@@ -89,15 +90,39 @@ class _MyHomePageState extends State<MyHomePage> {
     final mediaQuery = MediaQuery.of(context);
     final PreferredSizeWidget appBar = Platform.isIOS
         ? CupertinoNavigationBar(
-            middle: Text('Live Below Your Means'),
+            middle: Text('Live Below Your Means',
+                style: TextStyle(
+                  fontFamily: 'Quicksand',
+                )),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                    child: Icon(
+                      CupertinoIcons.add_circled,
+                      size: 30,
+                      color: Colors.grey,
+                    ),
+                    onTap: () => _startAddNewTransaction(context)),
+              ],
+            ),
           )
         : AppBar(
-            title: Text('Live Below Your Means'),
+            title: Text('Live Below Your Means',
+                style: TextStyle(
+                  fontFamily: 'Quicksand',
+                )),
             actions: <Widget>[
-              IconButton(icon: Icon(Icons.add), onPressed: () {}),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  _startAddNewTransaction(context);
+                },
+              ),
             ],
           );
-    final pageBody = SingleChildScrollView(
+    final pageBody = SafeArea(
+        child: SingleChildScrollView(
       child: Column(children: <Widget>[
         Container(
             height: (mediaQuery.size.height -
@@ -112,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 0.78,
             child: TransactionList(_userTransactions, _deleteTransaction)),
       ]),
-    );
+    ));
 
     return Platform.isIOS
         ? CupertinoPageScaffold(child: pageBody, navigationBar: appBar)

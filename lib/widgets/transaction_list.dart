@@ -19,8 +19,10 @@ class TransactionList extends StatelessWidget {
             padding: EdgeInsets.only(top: 20),
             child: Column(
               children: <Widget>[
-                Text('No Transactions Added Yet...',
-                    style: TextStyle(fontSize: 15)),
+                Text(
+                  'No Transactions Added Yet...',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
                 SizedBox(
                   height: 40,
                 ),
